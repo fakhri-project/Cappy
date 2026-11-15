@@ -1,21 +1,26 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class LevelTransition : MonoBehaviour
+public class NextLevelTrigger : MonoBehaviour
 {
-    [SerializeField] private Transform nextLevelSpawn;
+    [SerializeField] private GameObject currentLevel;
+    [SerializeField] private GameObject nextLevel;
+    [SerializeField] private Transform nextSpawn;
 
-    private bool hasTransitioned = false;
+    private bool used;
 
-    private void OnTriggerEnter2D(Collider2D other)
+    void OnTriggerEnter2D(Collider2D other)
     {
-        if (hasTransitioned) return;
+        if (used) return;
 
-        if (other.CompareTag("Player"))
-        {
-            hasTransitioned = true;
-            other.transform.position = nextLevelSpawn.position;
-        }
+        PlayerRespawn player = other.GetComponentInParent<PlayerRespawn>();
+        if (player == null) return;
+
+        used = true;
+
+        Debug.Log("Pindah ke: " + nextSpawn.position + " (" + nextSpawn.name + ")");
+
+        nextLevel.SetActive(true);
+        player.Respawn(nextSpawn.position);
+        currentLevel.SetActive(false);
     }
 }
